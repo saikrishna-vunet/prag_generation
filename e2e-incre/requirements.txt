@@ -1,0 +1,12 @@
+gensim==3.7.1
+numpy==1.16.3
+progressbar2==3.9.3
+pycodestyle==2.8.0
+python-utils==3.3.3
+PyYAML==5.1
+scipy==1.2.1
+six==1.16.0
+smart-open==6.0.0
+toml==0.10.2
+torch==1.0.1
+typing-extensions==4.3.0
