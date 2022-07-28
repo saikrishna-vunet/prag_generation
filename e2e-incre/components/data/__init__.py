@@ -48,7 +48,8 @@ class BaseDataClass(object):
         # Read train data, if the train data filename is specified in the config file
         if train_data_fname is not None:
             logger.debug("Reading train data")
-            train_x_raw, train_y_raw, train_lex, train_mr = self.read_csv_train(train_data_fname, group_ref=True)
+            train_x_raw, train_y_raw, train_lex, train_mr = self.read_csv_train(
+                train_data_fname, group_ref=True)
             self.lexicalizations['train'] = train_lex
             self.uni_mr['train'] = train_mr
             # Read dev data, if the dev data filename is specified in the config file
@@ -57,14 +58,16 @@ class BaseDataClass(object):
                 raise Exception("No dev data in the config file!")
 
             logger.debug("Reading dev data")
-            dev_x_raw, dev_y_raw, dev_lex, dev_mr = self.read_csv_train(dev_data_fname, group_ref=True)
+            dev_x_raw, dev_y_raw, dev_lex, dev_mr = self.read_csv_train(
+                dev_data_fname, group_ref=True)
             self.lexicalizations['dev'] = dev_lex
             self.uni_mr['dev'] = dev_mr
 
         # Read test data, if test data filename is specified in the config file
         if test_data_fname is not None:
             logger.debug("Reading test data")
-            test_x_raw, test_y_raw, test_lex, test_mr = self.read_csv_train(test_data_fname)#self.read_csv_test(test_data_fname)
+            test_x_raw, test_y_raw, test_lex, test_mr = self.read_csv_test(
+                test_data_fname)  # self.read_csv_test(test_data_fname)
             self.lexicalizations['test'] = test_lex
             self.uni_mr['test'] = test_mr
         # Setup vocabulary
@@ -102,9 +105,9 @@ class BaseDataClass(object):
         with open(fname, 'r') as csv_file:
             reader = csv.reader(csv_file, delimiter=',', quotechar='"')
             header = next(reader)
-
             # Files should have headers
-            assert header == ['mr', 'ref'], 'The file does not contain a header!'
+            assert header == [
+                'mr', 'ref'], 'The file does not contain a header!'
 
             first_row = next(reader)
             curr_mr = first_row[0]
@@ -146,13 +149,14 @@ class BaseDataClass(object):
                 """
         if group_ref:
             gen_multi_ref_dev(orig, fname='%s.multi-ref' % fname)
-        print(len(raw_data_x), len(raw_data_y), len(lexicalizations), len(uni_mrs))
+        print(len(raw_data_x), len(raw_data_y),
+              len(lexicalizations), len(uni_mrs))
         return raw_data_x, raw_data_y, lexicalizations, uni_mrs
 
     def read_csv_test(self, fname):
         raw_data_x = []
         lexicalizations = []
-        uni_mrs = [] 
+        uni_mrs = []
         with open(fname, 'r') as csv_file:
             reader = csv.reader(csv_file, delimiter=',', quotechar='"')
             header = next(reader)
@@ -195,9 +199,9 @@ class BaseDataClass(object):
                 s_r_toks.extend(tok)
             else:
                 s_r_toks.append(tok)
-        print(s_r_toks, s_tpks)
+        print(s_r_toks, s_toks)
         # Process target side text
-        for fragment in s_r_toks:#s.strip().split():
+        for fragment in s_r_toks:  # s.strip().split():
 
             # normalizing the price
             match = _FRAC_NUM_PAT.match(fragment)
@@ -205,7 +209,8 @@ class BaseDataClass(object):
                 fragment_tokens = []
                 pound = match.group(1)
                 price = match.group(2)
-                price = re.sub(r'.00', '', price)  # stripping off trailing zeros from the price
+                # stripping off trailing zeros from the price
+                price = re.sub(r'.00', '', price)
                 if not pound.isdigit():
                     fragment_tokens.append(pound)
                 fragment_tokens.append(price)
@@ -238,7 +243,7 @@ class BaseDataClass(object):
         if lex_list:
             for l, t in zip(lex_list, (NAME_TOKEN, NEAR_TOKEN)):
                 if l:
-                    s = s.replace(l, t) 
+                    s = s.replace(l, t)
         s_r_toks, s_toks = [], s.strip().split()
         for tok in s_toks:
             if NEAR_TOKEN != tok and NEAR_TOKEN in tok:
@@ -252,10 +257,10 @@ class BaseDataClass(object):
             else:
                 s_r_toks.append(tok)
         #print(s_r_toks, s_toks)
-        #exit()
+        # exit()
         # Process target side text
         for fragment in s_r_toks:
-        #for fragment in s.strip().split():
+            # for fragment in s.strip().split():
             fragment_tokens = _WORD_SPLIT.split(fragment)
             words.extend(fragment_tokens)
 

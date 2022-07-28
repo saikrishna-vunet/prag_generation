@@ -21,10 +21,12 @@ def run(config_dict):
     DataClass = importlib.import_module(data_module).component
     ModelClass = importlib.import_module(model_module).component
     TrainingClass = importlib.import_module(training_module).component
-    EvaluationClass = importlib.import_module(evaluation_module).component if evaluation_module else None
+    EvaluationClass = importlib.import_module(
+        evaluation_module).component if evaluation_module else None
 
     model_dirname = make_model_dir(config_dict)
-    logger = set_logger(config_dict["log_level"], os.path.join(model_dirname, "log.txt"))
+    logger = set_logger(config_dict["log_level"],
+                        os.path.join(model_dirname, "log.txt"))
 
     # Setup the data
     data = DataClass(config_dict["data_params"])
@@ -34,7 +36,8 @@ def run(config_dict):
     fix_seed(config_d['random_seed'])  # fix seed generators
     model = ModelClass(config_dict["model_params"])
     print("build model done")
-    model.setup(data)  # there are some data-specific params => pass data as arg
+    # there are some data-specific params => pass data as arg
+    model.setup(data)
     print("setup data done")
     if mode == "train":
         training_params = config_dict['training_params']
@@ -48,26 +51,29 @@ def run(config_dict):
         model_fname = config_dict["model_fn"]
         load_model(model, model_fname)
         id2word = data.vocab.id2tok
-
         if 'dev' in data.fnames:
             logger.info("Predicting on dev data")
-            predicted_ids, attention_weights = evaluator.evaluate_model(model, data.dev[0])
+            predicted_ids, attention_weights = evaluator.evaluate_model(
+                model, data.dev[0], data.uni_mr['dev'])
             data_lexicalizations = data.lexicalizations['dev']
             predicted_snts = evaluator.lexicalize_predictions(predicted_ids,
                                                               data_lexicalizations,
                                                               id2word)
 
-            save_predictions_txt(predicted_snts, '%s.devset.predictions.txt' % model_fname)
-            
+            save_predictions_txt(
+                predicted_snts, '%s.devset.predictions.txt' % model_fname)
+
         if 'test' in data.fnames:
             logger.info("Predicting on test data")
-            predicted_ids, attention_weights = evaluator.evaluate_model(model, data.test[0])
+            predicted_ids, attention_weights = evaluator.evaluate_model(
+                model, data.test[0], data.uni_mr['test'])
             data_lexicalizations = data.lexicalizations['test']
             predicted_snts = evaluator.lexicalize_predictions(predicted_ids,
                                                               data_lexicalizations,
                                                               id2word)
 
-            save_predictions_txt(predicted_snts, '%s.testset.predictions.txt' % model_fname)
+            save_predictions_txt(
+                predicted_snts, '%s.testset.predictions.txt' % model_fname)
 
     else:
         logger.warning("Check the 'mode' field in the config file: %s" % mode)

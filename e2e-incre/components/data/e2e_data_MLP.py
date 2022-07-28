@@ -74,7 +74,8 @@ class E2EMLPData(BaseDataClass):
 
             # Truncating long sentences
             if src_len > self.max_src_len or tgt_len >= self.max_tgt_len:
-                logger.info("Skipping long snt: %d (src) / %d (tgt)" % (src_len, tgt_len))
+                logger.info("Skipping long snt: %d (src) / %d (tgt)" %
+                            (src_len, tgt_len))
                 skipped_cnt += 1
                 continue
 
@@ -110,7 +111,8 @@ class E2EMLPData(BaseDataClass):
         """
 
         if mode == "random":
-            indices = np.random.choice(np.arange(data_size), data_size, replace=False)
+            indices = np.random.choice(
+                np.arange(data_size), data_size, replace=False)
 
         elif mode == "no_shuffling":
             indices = np.arange(data_size)
@@ -121,7 +123,6 @@ class E2EMLPData(BaseDataClass):
         return indices
 
     def prepare_training_data(self, xy_ids, batch_size):
-
         """
         Cut the dataset into batches.
         :param xy_ids: a tuple of 2 lists:
@@ -132,16 +133,19 @@ class E2EMLPData(BaseDataClass):
         """
 
         # sort according to the lengths -> xy pairs
-        sorted_data = sorted(zip(*xy_ids), key=lambda p: len(p[0]), reverse=True)
+        sorted_data = sorted(
+            zip(*xy_ids), key=lambda p: len(p[0]), reverse=True)
         data_size = len(sorted_data)
         num_batches = data_size // batch_size
-        data_indices = self.index_data(data_size, mode='no_shuffling')  # TODO: use shuffling
+        data_indices = self.index_data(
+            data_size, mode='no_shuffling')  # TODO: use shuffling
         batch_pairs = []
 
         for bi in range(num_batches):
             batch_x = []
             batch_y = []
-            curr_batch_indices = data_indices[bi * batch_size: (bi + 1) * batch_size]
+            curr_batch_indices = data_indices[bi *
+                                              batch_size: (bi + 1) * batch_size]
 
             for idx in curr_batch_indices:
                 x_ids, y_ids = sorted_data[idx]
@@ -168,7 +172,8 @@ class E2EMLPData(BaseDataClass):
         return batch_pairs
 
     def setup_vocab(self, vocab_path, train_x_raw, train_y_raw):
-        self.vocab = VocabularyShared(vocab_path, train_x_raw, train_y_raw, lower=False)  # TODO: lower!
+        self.vocab = VocabularyShared(
+            vocab_path, train_x_raw, train_y_raw, lower=False)  # TODO: lower!
 
 
 component = E2EMLPData

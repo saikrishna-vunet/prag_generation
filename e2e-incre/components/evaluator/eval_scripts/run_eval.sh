@@ -2,8 +2,8 @@
 set -euxo pipefail
 
 # Modify these path variables, if needed!
-PYTHON2=/usr/bin/python2
-E2E_METRICS_FOLDER=/data/sheng/e2e/e2e-metrics
+PYTHON2=/home/saikrishna/prag_generation/.env/bin/python2.7
+E2E_METRICS_FOLDER=/home/saikrishna/prag_generation/e2e-incre/e2e-metrics
 
 REF_FNAME=$1
 PRED_FNAME=$2

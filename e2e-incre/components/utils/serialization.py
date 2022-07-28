@@ -110,7 +110,8 @@ def load_model(model, model_weights_fn):
     """
 
     logger.info('Loading the model <-- %s' % model_weights_fn)
-    model.load_state_dict(torch.load(open(model_weights_fn, 'rb')))
+    model.load_state_dict(torch.load(open(model_weights_fn, 'rb'),
+                                     map_location='cpu'))
 
 
 def get_experiment_name(config_d):
@@ -184,7 +185,8 @@ def make_model_dir(config):
 
     if mode == 'predict':
         model_fn = config["model_fn"]
-        model_dirname = os.path.split(model_fn)[0]  # dir which holds the serialzed (trained) model
+        # dir which holds the serialzed (trained) model
+        model_dirname = os.path.split(model_fn)[0]
 
     elif mode == 'train':
         # need to have only one directory for all experiments

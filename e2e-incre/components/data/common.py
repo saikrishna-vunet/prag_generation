@@ -52,7 +52,8 @@ def pad_snt(snt_ids_trunc, max_len):
     :return:
     """
 
-    snt_ids_trunc_pad = snt_ids_trunc + [PAD_ID] * (max_len - len(snt_ids_trunc))
+    snt_ids_trunc_pad = snt_ids_trunc + \
+        [PAD_ID] * (max_len - len(snt_ids_trunc))
 
     return snt_ids_trunc_pad
 
@@ -132,7 +133,8 @@ def cat2onehot_var(snt_ids, vocab_size, batch_size):
 
     targets = np.array([snt_ids]).reshape(-1)
     one_hot_targets = np.eye(vocab_size)[targets]
-    result = Variable(torch.FloatTensor(one_hot_targets).view(-1, batch_size, vocab_size))  #
+    result = Variable(torch.FloatTensor(
+        one_hot_targets).view(-1, batch_size, vocab_size))  #
 
     return result
 

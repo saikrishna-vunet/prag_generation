@@ -45,7 +45,6 @@ class BaseTrainer(object):
             self.meteor_scores = []
 
     def run_external_eval(self, ref_fn, pred_fn):
-
         """
         Run external evaluation script (provided by the E2E NLG org)
 
@@ -93,8 +92,8 @@ class BaseTrainer(object):
 
         self.set_optimizer(model, self.config['optimizer'])
         self.set_train_criterion(len(id2word), PAD_ID)
-        #print(data.dev[0])
-        #exit()
+        # print(data.dev[0])
+        # exit()
         # Moving the model to GPU, if available
         if self.use_cuda:
             model = model.cuda()
@@ -102,13 +101,15 @@ class BaseTrainer(object):
         for epoch_idx in range(1, self.n_epochs + 1):
 
             epoch_start = time.time()
-            pred_fn = os.path.join(self.model_dir, 'predictions.epoch%d' % epoch_idx)
+            pred_fn = os.path.join(
+                self.model_dir, 'predictions.epoch%d' % epoch_idx)
 
             train_loss = self.train_epoch(epoch_idx, model, train_batches)
             dev_loss = self.compute_val_loss(model, dev_batches)
 
-            predicted_ids, attention_weights = evaluator.evaluate_model(model, data.dev[0], data.uni_mr['dev'], dis=False)
-            #print(len(predicted_ids))
+            predicted_ids, attention_weights = evaluator.evaluate_model(
+                model, data.dev[0], data.uni_mr['dev'], dis=False)
+            # print(len(predicted_ids))
             predicted_tokens = evaluator.lexicalize_predictions(predicted_ids,
                                                                 dev_lexicalizations,
                                                                 id2word)
@@ -120,9 +121,11 @@ class BaseTrainer(object):
                 self.run_external_eval(dev_multi_ref_fn, pred_fn)
 
             if self.save_model:
-                save_model(model, os.path.join(self.model_dir, 'weights.epoch%d' % epoch_idx))
+                save_model(model, os.path.join(
+                    self.model_dir, 'weights.epoch%d' % epoch_idx))
 
-            logger.info('Epoch %d/%d: time=%s' % (epoch_idx, self.n_epochs, asMinutes(time.time() - epoch_start)))
+            logger.info('Epoch %d/%d: time=%s' % (epoch_idx,
+                        self.n_epochs, asMinutes(time.time() - epoch_start)))
 
         self.plot_lcurve()
 
@@ -132,7 +135,8 @@ class BaseTrainer(object):
             save_scores(scores, self.score_file_header, score_fname)
             self.plot_training_results()
 
-        logger.info('End training time=%s' % (asMinutes(time.time() - training_start_time)))
+        logger.info('End training time=%s' %
+                    (asMinutes(time.time() - training_start_time)))
 
     def compute_val_loss(self, model, dev_batches):
 
@@ -143,7 +147,10 @@ class BaseTrainer(object):
 
         for batch_idx in bar(range(num_dev_batches)):
             loss_var = self.train_step(model, dev_batches[batch_idx])
-            loss_data = loss_var.data[0]
+            if list(loss_var.size()) == []:
+                loss_data = loss_var.data.item()
+            else:
+                loss_data = loss_var.data[0]
 
             # Record loss
             running_losses = ([loss_data] + running_losses)[:20]
@@ -162,11 +169,13 @@ class BaseTrainer(object):
 
         num_train_batches = len(train_batches)
         bar = create_progress_bar('train_loss')
-
         for pair_idx in bar(range(num_train_batches)):
             self.optimizer.zero_grad()
             loss_var = self.train_step(model, train_batches[pair_idx])
-            loss_data = loss_var.data[0]
+            if list(loss_var.size()) == []:
+                loss_data = loss_var.data.item()
+            else:
+                loss_data = loss_var.data[0]
             loss_var.backward()  # compute gradients
             self.optimizer.step()  # update weights
 
@@ -206,10 +215,12 @@ class BaseTrainer(object):
             self.optimizer = optim.SGD(params=model.parameters(), lr=self.lr)
 
         elif opt_name == "Adam":
-            self.optimizer = optim.Adam(params=model.parameters(), lr=self.lr)
+            self.optimizer = optim.Adam(
+                params=model.parameters(), lr=self.lr)
 
         elif opt_name == 'RMSprop':
-            self.optimizer = optim.RMSprop(params=model.parameters(), lr=self.lr)
+            self.optimizer = optim.RMSprop(
+                params=model.parameters(), lr=self.lr)
 
         else:
             raise NotImplementedError()
@@ -223,7 +234,8 @@ class BaseTrainer(object):
     def get_plot_names(self):
         raise NotImplementedError()
 
-    @property
+    @ property
     def score_file_header(self):
-        HEADER = ['bleu', 'nist', 'cider', 'rouge', 'meteor', 'train_loss', 'dev_loss']
+        HEADER = ['bleu', 'nist', 'cider', 'rouge',
+                  'meteor', 'train_loss', 'dev_loss']
         return HEADER

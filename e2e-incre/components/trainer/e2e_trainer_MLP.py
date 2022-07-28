@@ -33,7 +33,8 @@ class E2EMLPTrainer(BaseTrainer):
                  for t in datum]  # [SL x B, TL x B]
 
         logits = model.forward(datum)  # TL x B x TV
-        loss_var = self.calc_loss(logits, datum)  # have to compute log_logits, since using NLL loss
+        # have to compute log_logits, since using NLL loss
+        loss_var = self.calc_loss(logits, datum)
         return loss_var
 
     def calc_loss(self, logits, datum):
@@ -47,7 +48,8 @@ class E2EMLPTrainer(BaseTrainer):
     def plot_lcurve(self):
         fig_fname = os.path.join(self.model_dir, "lcurve.pdf")
         title = self.config['modeltype']
-        plot_lcurve(self.train_losses, self.dev_losses, img_title=title, save_path=fig_fname, show=False)
+        plot_lcurve(self.train_losses, self.dev_losses,
+                    img_title=title, save_path=fig_fname, show=False)
 
     def plot_training_results(self):
         losses = np.asarray([self.train_losses, self.dev_losses]).transpose()
@@ -59,7 +61,8 @@ class E2EMLPTrainer(BaseTrainer):
                                     self.meteor_scores),
                             names=self.get_plot_names(),
                             img_title=self.config['modeltype'],
-                            save_path=os.path.join(self.model_dir, "lcurve_scores.pdf"),
+                            save_path=os.path.join(
+                                self.model_dir, "lcurve_scores.pdf"),
                             show=False)
 
     def get_plot_names(self):
